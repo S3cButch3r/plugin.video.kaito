@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import control
+from . import control
 import xbmcvfs
 
 try:

@@ -3,7 +3,7 @@ import json
 import ast
 import re
 from functools import partial
-from tmdb import TMDBAPI
+from .tmdb import TMDBAPI
 from ..ui import database, utils
 
 class TRAKTAPI:
@@ -86,14 +86,14 @@ class TRAKTAPI:
 
     def _process_trakt_episodes(self, anilist_id, season, episodes, eps_watched):
         mapfunc = partial(self._parse_trakt_seasons, show_id=anilist_id, eps_watched=eps_watched)
-        all_results = map(mapfunc, episodes)
+        all_results = list(map(mapfunc, episodes))
 
         return all_results
 
     def _process_season_view(self, anilist_id, meta_ids, kodi_meta, url):
         result = self._json_request(url)
         mapfunc = partial(self._parse_trakt_view, show_id=anilist_id, show_meta=meta_ids)
-        all_results = map(mapfunc, result)
+        all_results = list(map(mapfunc, result))
         return all_results, 'seasons'
 
     def _process_direct_season_view(self, anilist_id, meta_ids, kodi_meta, url):
@@ -107,7 +107,7 @@ class TRAKTAPI:
             all_results = self.get_trakt_episodes(anilist_id, season['number']), 'episodes'
         except:
             mapfunc = partial(self._parse_trakt_view, show_id=anilist_id, show_meta=meta_ids)
-            all_results = map(mapfunc, result), 'seasons'
+            all_results = list(map(mapfunc, result)), 'seasons'
 
         return all_results
     
@@ -116,7 +116,7 @@ class TRAKTAPI:
         update_time = (datetime.today() + timedelta(days=5)).strftime('%Y-%m-%d')
         result = self._json_request(url)
         mapfunc = partial(self._parse_trakt_episode_view, show_id=anilist_id, show_meta=show_meta, season=season, poster=poster, fanart=fanart, eps_watched=eps_watched, update_time=update_time)
-        all_results = map(mapfunc, result)
+        all_results = list(map(mapfunc, result))
         return all_results
 
     def get_trakt_id(self, name):
@@ -149,7 +149,7 @@ class TRAKTAPI:
             return []
 
         mapfunc = partial(self._parse_search_trakt, show_id=anilist_id)
-        all_results = map(mapfunc, result)
+        all_results = list(map(mapfunc, result))
         return all_results
 
     def _add_fanart(self, anilist_id, meta_ids, kodi_meta):

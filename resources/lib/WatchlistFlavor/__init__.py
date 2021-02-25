@@ -1,10 +1,10 @@
 from time import time
 from ..ui import control
-from WatchlistFlavorBase import WatchlistFlavorBase
+from .WatchlistFlavorBase import WatchlistFlavorBase
 
-import MyAnimeList
-import Kitsu
-import AniList
+from . import MyAnimeList
+from . import Kitsu
+from . import AniList
 
 class WatchlistFlavor(object):
     __LOGIN_KEY = "addon.login"
@@ -126,7 +126,7 @@ class WatchlistFlavor(object):
         if not res:
             return control.ok_dialog('Login', 'Incorrect username or password')
 
-        for _id, value in res.items():
+        for _id, value in list(res.items()):
             control.setSetting('%s.%s' % (flavor, _id), value)
 
         control.refresh()

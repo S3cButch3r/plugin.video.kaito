@@ -16,9 +16,9 @@ class sources(BrowserBase):
         slugs = database.get(get_backup, 168, anilist_id, 'Gogoanime')
         if not slugs:
             return []
-        slugs = slugs.keys()
+        slugs = list(slugs.keys())
         mapfunc = partial(self._process_gogo, show_id=anilist_id, episode=episode)
-        all_results = map(mapfunc, slugs)
+        all_results = list(map(mapfunc, slugs))
         all_results = list(itertools.chain(*all_results))
         return all_results
 
@@ -71,7 +71,7 @@ class sources(BrowserBase):
         result = requests.get(url).text
         soup = bs.BeautifulSoup(result, 'html.parser')
         animes = soup.find_all('div', {'class': 'img'})
-        all_results = map(self._parse_latest_view, animes)
+        all_results = list(map(self._parse_latest_view, animes))
         return all_results
 
     def _parse_latest_view(self, res):

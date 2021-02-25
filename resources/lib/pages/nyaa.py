@@ -102,7 +102,7 @@ class sources(BrowserBase):
             torrent['hash'] = re.findall(r'btih:(.*?)(?:&|$)', torrent['magnet'])[0]
 
         cache_list = TorrentCacheCheck().torrentCacheCheck(list_)
-        all_results = map(self._parse_anime_view, cache_list)
+        all_results = list(map(self._parse_anime_view, cache_list))
 
         return all_results
 
@@ -140,7 +140,7 @@ class sources(BrowserBase):
                 title = torrent['name'].lower()
 
                 ep_match = rex_ep.findall(title)
-                ep_match = map(int, list(itertools.ifilter(None, itertools.chain(*ep_match))))
+                ep_match = list(map(int, list([_f for _f in itertools.chain(*ep_match) if _f])))
 
                 if ep_match and ep_match[0] != int(episode):
                     regex_ep_range = r'\s\d+-\d+|\s\d+~\d+|\s\d+\s-\s\d+|\s\d+\s~\s\d+'
@@ -152,7 +152,7 @@ class sources(BrowserBase):
                         continue
                 
                 match = rex.findall(title)
-                match = map(int, list(itertools.ifilter(None, itertools.chain(*match))))
+                match = list(map(int, list([_f for _f in itertools.chain(*match) if _f])))
 
                 if not match or match[0] == int(season):
                     filtered_list.append(torrent)
@@ -163,7 +163,7 @@ class sources(BrowserBase):
         cache_list = TorrentCacheCheck().torrentCacheCheck(filtered_list)
         cache_list = sorted(cache_list, key=lambda k: k['downloads'], reverse=True)
         mapfunc = partial(self._parse_nyaa_episode_view, episode=episode)
-        all_results = map(mapfunc, cache_list)
+        all_results = list(map(mapfunc, cache_list))
         return all_results
 
     def _process_nyaa_backup(self, url, anilist_id, _zfill, episode='', rescrape=False):
@@ -196,7 +196,7 @@ class sources(BrowserBase):
         cache_list = sorted(cache_list, key=lambda k: k['downloads'], reverse=True)
 
         mapfunc = partial(self._parse_nyaa_episode_view, episode=episode)
-        all_results = map(mapfunc, cache_list)
+        all_results = list(map(mapfunc, cache_list))
         return all_results
 
     def _process_nyaa_movie(self, url, episode):
@@ -225,13 +225,13 @@ class sources(BrowserBase):
         cache_list = TorrentCacheCheck().torrentCacheCheck(list_)
         cache_list = sorted(cache_list, key=lambda k: k['downloads'], reverse=True)
         mapfunc = partial(self._parse_nyaa_episode_view, episode=episode)
-        all_results = map(mapfunc, cache_list)
+        all_results = list(map(mapfunc, cache_list))
         return all_results
 
     def _process_cached_sources(self, list_, episode):
         cache_list = TorrentCacheCheck().torrentCacheCheck(list_)
         mapfunc = partial(self._parse_nyaa_cached_episode_view, episode=episode)
-        all_results = map(mapfunc, cache_list)
+        all_results = list(map(mapfunc, cache_list))
         return all_results        
 
     def get_latest(self, page=1):

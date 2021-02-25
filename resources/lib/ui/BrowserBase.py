@@ -1,5 +1,5 @@
-import urllib
-import http
+import urllib.request, urllib.parse, urllib.error
+from . import http
 
 class BrowserBase(object):
     _BASE_URL = None
@@ -19,5 +19,5 @@ class BrowserBase(object):
 
     def _get_request(self, url, data=None, set_request=None):
         if data:
-            url = "%s?%s" % (url, urllib.urlencode(data))
+            url = "%s?%s" % (url, urllib.parse.urlencode(data))
         return self._send_request(url, None, set_request)

@@ -58,7 +58,7 @@ class WatchlistFlavorAuth(BaseWindow):
         else:
             res['authvar'] = self.getControl(1000).getText()
 
-        for _id, value in res.items():
+        for _id, value in list(res.items()):
             control.setSetting('%s.%s' % (self.flavor, _id), value)
 
         self.authorized = True
@@ -89,7 +89,7 @@ class AltWatchlistFlavorAuth:
             res['authvar'] = dialog.input('Enter MAL auth url', type=control.kodiGui.INPUT_ALPHANUM)
 
         try:
-            for _id, value in res.items():
+            for _id, value in list(res.items()):
                 if not value:
                     raise Exception
 

@@ -3,7 +3,7 @@ import hashlib
 import re
 import time
 import xbmcvfs
-import control
+from . import control
 import xbmcgui
 
 try:

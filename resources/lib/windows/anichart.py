@@ -27,7 +27,7 @@ class Anichart(BaseWindow):
                 continue
 
             menu_item = control.menuItem(label='%s' % i['release_title'])
-            for info in i.keys():
+            for info in list(i.keys()):
                 try:
                     value = i[info]
                     if type(value) == list:

@@ -2,7 +2,7 @@
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
-from urlparse import urljoin
+from urllib.parse import urljoin
 import re
 
 from resources.lib.ui import source_utils
@@ -93,10 +93,10 @@ class AllDebrid:
         expiry = pin_ttl = int(resp['expires_in'])
         auth_complete = False
         control.copy2clip(resp['pin'])
-        control.progressDialog.create(control.ADDON_NAME + ': AllDebrid Auth',
-                                    line1=control.lang(30100).format(control.colorString(resp['base_url'])),
-                                    line2=control.lang(30101).format(control.colorString(resp['pin'])),
-                                    line3=control.lang(30102))
+        line1=control.lang(30100).format(control.colorString(resp['base_url']))
+        line2=control.lang(30101).format(control.colorString(resp['pin']))
+        line3=control.lang(30102)
+        control.progressDialog.create(control.ADDON_NAME + ': AllDebrid Auth', line1 + '\n' + line2 + '\n' + line3)
 
         # Seems the All Debrid servers need some time do something with the pin before polling
         # Polling to early will cause an invalid pin error
@@ -148,7 +148,7 @@ class AllDebrid:
         if host_list is not None:
             hosters['premium']['all_debrid'] = \
                 [(d, d.split('.')[0])
-                 for l in host_list['hosts'].values()
+                 for l in list(host_list['hosts'].values())
                  if 'status' in l and l['status']
                  for d in l['domains']]
         else:

@@ -51,7 +51,7 @@ class SourceSelect(BaseWindow):
 
         selected_flavor_item = self.flavors_list.getSelectedItem()
         self.selected_flavor = (selected_flavor_item.getLabel()).lower()
-        for _id, value in self.anime_list_entry[self.selected_flavor].items():
+        for _id, value in list(self.anime_list_entry[self.selected_flavor].items()):
             item = control.menuItem(label='%s' % _id)
             item.setProperty(_id, str(value))
             self.editor_list.addItem(item)
@@ -67,7 +67,7 @@ class SourceSelect(BaseWindow):
         self.editor_list.reset()
         selected_flavor_item = self.flavors_list.getSelectedItem()
         self.selected_flavor = (selected_flavor_item.getLabel()).lower()
-        for _id, value in self.anime_list_entry[self.selected_flavor].items():
+        for _id, value in list(self.anime_list_entry[self.selected_flavor].items()):
             item = control.menuItem(label='%s' % _id)
             item.setProperty(_id, str(value))
             self.editor_list.addItem(item)

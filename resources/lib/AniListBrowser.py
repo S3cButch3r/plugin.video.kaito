@@ -5,9 +5,9 @@ import time
 import datetime
 import ast
 from functools import partial
-from ui import utils
-from ui import database
-from ui.divide_flavors import div_flavor
+from .ui import utils
+from .ui import database
+from .ui.divide_flavors import div_flavor
 
 class AniListBrowser():
     _URL = "https://graphql.anilist.co"
@@ -127,7 +127,7 @@ class AniListBrowser():
             page += 1
             variables['page'] = page
   
-        results = map(self._process_airing_view, list_)
+        results = list(map(self._process_airing_view, list_))
         results = list(itertools.chain(*results))
         return results
 
@@ -218,7 +218,7 @@ class AniListBrowser():
         result = requests.post(self._URL, json={'query': query, 'variables': variables})
         results = result.json()
 
-        if results.has_key("errors"):
+        if "errors" in results:
             return
 
         json_res = results['data']['Page']
@@ -277,7 +277,7 @@ class AniListBrowser():
         result = requests.post(self._URL, json={'query': query, 'variables': variables})
         results = result.json()
 
-        if results.has_key("errors"):
+        if "errors" in results:
             return
 
         json_res = results['data']['Page']
@@ -332,7 +332,7 @@ class AniListBrowser():
         result = requests.post(self._URL, json={'query': query, 'variables': variables})
         results = result.json()
 
-        if results.has_key("errors"):
+        if "errors" in results:
             return
 
         json_res = results['data']['Page']
@@ -381,7 +381,7 @@ class AniListBrowser():
         result = requests.post(self._URL, json={'query': query, 'variables': variables})
         results = result.json()
 
-        if results.has_key("errors"):
+        if "errors" in results:
             return
 
         json_res = results['data']['Media']['recommendations']
@@ -419,7 +419,7 @@ class AniListBrowser():
         result = requests.post(self._URL, json={'query': query, 'variables': variables})
         results = result.json()
 
-        if results.has_key("errors"):
+        if "errors" in results:
             return
 
         json_res = results['data']['Media']
@@ -457,7 +457,7 @@ class AniListBrowser():
         result = requests.post(self._URL, json={'query': query, 'variables': variables})
         results = result.json()
 
-        if results.has_key("errors"):
+        if "errors" in results:
             return
 
         json_res = results['data']['Media'] 
@@ -472,17 +472,17 @@ class AniListBrowser():
         else:
             mapfunc = self._base_anilist_view
 
-        all_results = map(mapfunc, json_res['ANIME'])
+        all_results = list(map(mapfunc, json_res['ANIME']))
         all_results = list(itertools.chain(*all_results))
 
         all_results += self._handle_paging(hasNextPage, base_plugin_url, page)
         return all_results
 
     def _process_airing_view(self, json_res):
-        filter_json = filter(lambda x: x['media']['isAdult'] == False, json_res['airingSchedules'])
+        filter_json = [x for x in json_res['airingSchedules'] if x['media']['isAdult'] == False]
         ts = int(time.time())
         mapfunc = partial(self._base_airing_view, ts=ts)
-        all_results = map(mapfunc, filter_json)
+        all_results = list(map(mapfunc, filter_json))
         return all_results
 
     @div_flavor
@@ -495,7 +495,7 @@ class AniListBrowser():
         else:
             mapfunc = self._base_anilist_view
 
-        all_results = map(mapfunc, res)
+        all_results = list(map(mapfunc, res))
         all_results = list(itertools.chain(*all_results))
 
         all_results += self._handle_paging(hasNextPage, base_plugin_url, page)
@@ -642,8 +642,8 @@ class AniListBrowser():
     def _get_titles(self, res):
         titles = list(set(res['title'].values()))
         if res['format'] == 'MOVIE':
-            titles = res['title'].values()
-        titles = filter(lambda x: all(ord(char) < 128 for char in x) if x else [], titles)[:3]
+            titles = list(res['title'].values())
+        titles = [x for x in titles if (all(ord(char) < 128 for char in x) if x else [])][:3]
         query_titles = '({})'.format(')|('.join(map(str, titles)))
         return query_titles
 
@@ -711,7 +711,7 @@ class AniListBrowser():
         del genres_list[6]
 
         tags_list = []
-        tags = filter(lambda x: x['isAdult'] == False, results['tags'])
+        tags = [x for x in results['tags'] if x['isAdult'] == False]
         for tag in tags:
             tags_list.append(tag['name'])
 
@@ -803,7 +803,7 @@ class AniListBrowser():
         result = requests.post(self._URL, json={'query': query, 'variables': variables})
         results = result.json()
 
-        if results.has_key("errors"):
+        if "errors" in results:
             return
 
         anime_res = results['data']['Page']['ANIME']
@@ -814,7 +814,7 @@ class AniListBrowser():
         else:
             mapfunc = self._base_anilist_view
 
-        all_results = map(mapfunc, anime_res)
+        all_results = list(map(mapfunc, anime_res))
         all_results = list(itertools.chain(*all_results))
 
         all_results += self._handle_paging(hasNextPage, base_plugin_url, page)

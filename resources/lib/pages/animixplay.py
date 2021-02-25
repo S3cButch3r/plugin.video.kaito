@@ -17,9 +17,9 @@ class sources(BrowserBase):
         slugs = database.get(get_backup, 168, anilist_id, 'Animixplay')
         if not slugs:
             return []
-        slugs = slugs.keys()
+        slugs = list(slugs.keys())
         mapfunc = partial(self._process_animixplay, show_id=anilist_id, episode=episode)
-        all_results = map(mapfunc, slugs)
+        all_results = list(map(mapfunc, slugs))
         all_results = list(itertools.chain(*all_results))
         return all_results
 

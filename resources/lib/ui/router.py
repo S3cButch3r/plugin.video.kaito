@@ -59,7 +59,7 @@ def router_process(url, params={}):
     payload = "/".join(url.split("/")[1:])
 
     for param in _REGISTERED_PARAM_HOOKS:
-        if param.key in params.keys():
+        if param.key in list(params.keys()):
             if param.value == params[param.key]:
                 param.func(payload, params)
 

@@ -25,10 +25,11 @@ class Premiumize:
         poll_again = True
         success = False
         control.copy2clip(token['user_code'])
-        control.progressDialog.create(control.ADDON_NAME,
-                                    line1=control.lang(30100).format(control.colorString(token['verification_uri'])),
-                                    line2=control.lang(30101).format(control.colorString(token['user_code'])),
-                                    line3=control.lang(30102))
+        line1=control.lang(30100).format(control.colorString(token['verification_uri']))
+        line2=control.lang(30101).format(control.colorString(token['user_code']))
+        line3=control.lang(30102)
+
+        control.progressDialog.create(control.ADDON_NAME, line1 + '\n' + line2 + '\n' + line3)
         control.progressDialog.update(0)
 
         while poll_again and not token_ttl <= 0 and not control.progressDialog.iscanceled():

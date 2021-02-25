@@ -1,11 +1,11 @@
 import sys
 import os
-import urllib2
-from urllib2 import URLError
-import httplib
+import urllib.request, urllib.error, urllib.parse
+from urllib.error import URLError
+import http.client
 import socket
 import time
-from urlparse import urlparse
+from urllib.parse import urlparse
 from copy import deepcopy
 import re
 

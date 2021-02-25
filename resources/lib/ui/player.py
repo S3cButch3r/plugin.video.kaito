@@ -3,7 +3,7 @@ import xbmc
 import xbmcaddon
 import xbmcplugin
 import xbmcgui
-import http
+from . import http
 
 from . import control
 
@@ -37,7 +37,7 @@ class hook_mimetype(object):
     @classmethod
     def trigger(cls, mimetype, item):
 
-        if mimetype in cls.__MIME_HOOKS.keys():
+        if mimetype in list(cls.__MIME_HOOKS.keys()):
             return cls.__MIME_HOOKS[mimetype](item)
 
         return item
@@ -46,7 +46,7 @@ class hook_mimetype(object):
         self._type = mimetype
 
     def __call__(self, func):
-        assert self._type not in self.__MIME_HOOKS.keys()
+        assert self._type not in list(self.__MIME_HOOKS.keys())
         self.__MIME_HOOKS[self._type] = func
         return func
 

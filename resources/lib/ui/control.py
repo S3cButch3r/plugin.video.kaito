@@ -6,9 +6,9 @@ import xbmc
 import xbmcaddon
 import xbmcplugin
 import xbmcgui
-import http
-import urlparse
-from urllib import quote
+from . import http
+from urllib.parse import parse_qsl
+from urllib.parse import quote
 
 try:
     import StorageServer
@@ -145,7 +145,7 @@ def copy2clip(txt):
     pass
 
 def colorString(text, color=None):
-    if color is 'default' or color is '' or color is None:
+    if color == 'default' or color == '' or color is None:
         color = 'deepskyblue'
 
     return '[COLOR %s]%s[/COLOR]' % (color, text)
@@ -169,7 +169,7 @@ def clear_cache():
     return CACHE.delete("%")
 
 def lang(x):
-    return __language__(x).encode('utf-8')
+    return __language__(x)
 
 def addon_url(url=''):
     return "plugin://%s/%s" % (ADDON_NAME, url)
@@ -180,7 +180,7 @@ def get_plugin_url():
     return sys.argv[0][len(addon_base):]
 
 def get_plugin_params():
-    return dict(urlparse.parse_qsl(sys.argv[2].replace('?', '')))
+    return dict(parse_qsl(sys.argv[2].replace('?', '')))
 
 def keyboard(text):
     keyboard = xbmc.Keyboard("", text, False)
@@ -250,7 +250,7 @@ def xbmc_add_player_item(name, url, art='', info='', draw_cm=None, bulk_add=Fals
 
     if art.get('fanart') is None:
         art['fanart'] = KAITO_FANART_PATH
-    
+
     liz.setArt(art)
 
     liz.setProperty("Video", "true")
@@ -275,7 +275,7 @@ def xbmc_add_dir(name, url, art='', info='', draw_cm=None):
 
     if art.get('fanart') is None:
         art['fanart'] = KAITO_FANART_PATH
-    
+
     liz.setArt(art)
 
     liz.addContextMenuItems(cm)
@@ -291,7 +291,7 @@ def draw_items(video_data, contentType="tvshows", viewType=None, draw_cm=None, b
                                  vid['info'], draw_cm, bulk_add)
 
     xbmcplugin.setContent(HANDLE, contentType)
-    if contentType == 'episodes': 
+    if contentType == 'episodes':
         xbmcplugin.addSortMethod(HANDLE, xbmcplugin.SORT_METHOD_EPISODE)
     xbmcplugin.endOfDirectory(HANDLE, succeeded=True, updateListing=False, cacheToDisc=True)
 

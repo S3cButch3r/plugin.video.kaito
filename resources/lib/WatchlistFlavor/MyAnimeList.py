@@ -4,7 +4,7 @@ import itertools
 import json
 import time
 import requests
-from WatchlistFlavorBase import WatchlistFlavorBase
+from .WatchlistFlavorBase import WatchlistFlavorBase
 
 class MyAnimeListWLF(WatchlistFlavorBase):
     _URL = "https://api.myanimelist.net/v2"
@@ -14,14 +14,14 @@ class MyAnimeListWLF(WatchlistFlavorBase):
 
     def login(self):
         try:
-            import urlparse
+            from urllib.parse import urlparse
             parsed = urlparse.urlparse(self._auth_var)
             params = urlparse.parse_qs(parsed.query)
             code = params['code']
             code_verifier = params['state']
         except:
             return
-        
+
         oauth_url = 'https://myanimelist.net/v1/oauth2/token'
         data = {
             'client_id': 'a8d85a4106b259b8c9470011ce2f76bc',
@@ -78,7 +78,7 @@ class MyAnimeListWLF(WatchlistFlavorBase):
         return self._parse_view(base)
 
     def _process_watchlist_view(self, params, base_plugin_url, page):
-        all_results = map(self._base_watchlist_view, self.__mal_statuses())
+        all_results = list(map(self._base_watchlist_view, self.__mal_statuses()))
         all_results = list(itertools.chain(*all_results))
         return all_results
 
@@ -94,7 +94,7 @@ class MyAnimeListWLF(WatchlistFlavorBase):
             ]
 
         return statuses
-        
+
     def get_watchlist_status(self, status, next_up, offset=0, page=1):
         params = {
             "status": status,
@@ -132,9 +132,9 @@ class MyAnimeListWLF(WatchlistFlavorBase):
         results = (self._get_request(url, headers=self.__headers(), params=params)).json()
 
         if next_up:
-            all_results = map(self._base_next_up_view, results['data'])
+            all_results = list(map(self._base_next_up_view, results['data']))
         else:
-            all_results = map(self._base_watchlist_status_view, results['data'])
+            all_results = list(map(self._base_watchlist_status_view, results['data']))
 
         all_results = list(itertools.chain(*all_results))
 
@@ -193,7 +193,7 @@ class MyAnimeListWLF(WatchlistFlavorBase):
 
         info = {}
 
-        info['episode'] = next_up                    
+        info['episode'] = next_up
 
         info['title'] = title
 
@@ -211,7 +211,7 @@ class MyAnimeListWLF(WatchlistFlavorBase):
             "fanart": image,
             "poster": poster,
         }
-        
+
         if next_up_meta:
             base['url'] = url
             return self._parse_view(base, False)
