@@ -98,14 +98,19 @@ class AniListWLF(WatchlistFlavorBase):
                 coverImage {
                     extraLarge
                 }
+                bannerImage
                 startDate {
                     year,
                     month,
                     day
                 }
+                nextAiringEpisode {
+                    episode,
+                    airingAt
+                }
                 description
                 synonyms
-                format                
+                format
                 status
                 episodes
                 genres
@@ -174,7 +179,9 @@ class AniListWLF(WatchlistFlavorBase):
             all_results = list(map(self._base_next_up_view, reversed(entries)))
         else:
             all_results = list(map(self._base_watchlist_status_view, reversed(entries)))
-    
+
+        all_results = [i for i in all_results if i is not None]
+
         all_results = list(itertools.chain(*all_results))
         return all_results
 
@@ -250,13 +257,20 @@ class AniListWLF(WatchlistFlavorBase):
         next_up = progress + 1
         episode_count = res['episodes'] if res['episodes'] is not None else 0
         title = '%s - %s/%s' % (res['title']['userPreferred'], next_up, episode_count)
-        poster = image = res['coverImage']['extraLarge']
-        plot = None
+        poster = res['coverImage']['extraLarge']
+        image = res['bannerImage']
+        plot = res['description']
+
+        if next_up > episode_count:
+            return None
+
+        if res['nextAiringEpisode'] is not None and next_up == res['nextAiringEpisode']['episode']:
+            return None
 
         anilist_id, next_up_meta = self._get_next_up_meta('', progress, res['id'])
         if next_up_meta:
             url = 'play/%d/%d/' % (anilist_id, next_up)
-            title = '%d/%d - %s' % (next_up, episode_count, next_up_meta.get('title', 'Episode {}'.format(next_up)))
+            title = '%s - %s (%d/%d)' % (res['title']['userPreferred'], next_up_meta.get('title', 'Episode {}'.format(next_up)), next_up, episode_count)
             image = next_up_meta.get('image', poster)
             plot = next_up_meta.get('plot')
 
