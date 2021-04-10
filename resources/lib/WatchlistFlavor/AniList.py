@@ -3,6 +3,7 @@ import json
 import ast
 from ..ui import database
 from .WatchlistFlavorBase import WatchlistFlavorBase
+from resources.lib.ui import control
 
 class AniListWLF(WatchlistFlavorBase):
     _URL = "https://graphql.anilist.co"
@@ -87,6 +88,7 @@ class AniListWLF(WatchlistFlavorBase):
             status
             progress
             customLists
+            updatedAt
             media {
                 id
                 idMal
@@ -164,6 +166,8 @@ class AniListWLF(WatchlistFlavorBase):
         return anime_entry
 
     def _process_status_view(self, query, variables, next_up, base_plugin_url, page):
+        print(query)
+        print(variables)
         result = self._post_request(self._URL, json={'query': query, 'variables': variables})
         results = result.json()
 
@@ -241,6 +245,7 @@ class AniListWLF(WatchlistFlavorBase):
             "name": '%s - %d/%d' % (res["title"]["userPreferred"], progress, res['episodes'] if res['episodes'] is not None else 0),
             "url": "watchlist_query/%s/%s/%d" % (res['id'], res.get('idMal'), progress),
             "image": res['coverImage']['extraLarge'],
+            "fanart": res.get('bannerImage', res['coverImage']['extraLarge']),
             "plot": info,
         }
 
@@ -251,15 +256,39 @@ class AniListWLF(WatchlistFlavorBase):
 
         return self._parse_view(base)
 
+    def _get_title_lang(self):
+        title_key = control.getSetting("titlelanguage")
+
+        title_lang = {
+            "40370": "userPreferred",
+            "Romaji (Shingeki no Kyojin)": "userPreferred",
+            "40371": "english",
+            "English (Attack on Titan)": "english"
+            }
+
+        if title_key:
+            selected_title_lang = title_lang[title_key]
+        else:
+            selected_title_lang = "userPreferred"
+
+        return selected_title_lang
+
     def _base_next_up_view(self, res):
+        print(res)
+
+        print(self._get_title_lang())
+
         progress = res['progress']
         res = res['media']
         next_up = progress + 1
         episode_count = res['episodes'] if res['episodes'] is not None else 0
-        title = '%s - %s/%s' % (res['title']['userPreferred'], next_up, episode_count)
+        title = '%s - %s/%s' % (res['title'][self._get_title_lang()], next_up, episode_count)
         poster = res['coverImage']['extraLarge']
         image = res['bannerImage']
         plot = res['description']
+
+        if progress == 0:
+            return None
 
         if next_up > episode_count:
             return None
@@ -270,7 +299,7 @@ class AniListWLF(WatchlistFlavorBase):
         anilist_id, next_up_meta = self._get_next_up_meta('', progress, res['id'])
         if next_up_meta:
             url = 'play/%d/%d/' % (anilist_id, next_up)
-            title = '%s - %s (%d/%d)' % (res['title']['userPreferred'], next_up_meta.get('title', 'Episode {}'.format(next_up)), next_up, episode_count)
+            title = 'E%d: %s - %s' % (next_up, res['title'][self._get_title_lang()], next_up_meta.get('title', 'Episode {}'.format(next_up)))
             image = next_up_meta.get('image', poster)
             plot = next_up_meta.get('plot')
 
@@ -285,7 +314,7 @@ class AniListWLF(WatchlistFlavorBase):
 
         info['title'] = title
 
-        info['tvshowtitle'] = res['title']['userPreferred']
+        info['tvshowtitle'] = res['title'][self._get_title_lang()]
 
         info['plot'] = plot
 
@@ -294,9 +323,9 @@ class AniListWLF(WatchlistFlavorBase):
         base = {
             "name": title,
             "url": "watchlist_query/%s/%s/%d" % (res['id'], res.get('idMal'), progress),
-            "image": image,
+            "image": res['coverImage']['extraLarge'],
             "plot": info,
-            "fanart": image,
+            "fanart": res.get('bannerImage', res['coverImage']['extraLarge']),
             "poster": poster,
         }
 
@@ -322,7 +351,7 @@ class AniListWLF(WatchlistFlavorBase):
     def __get_sort(self):
         sort_types = {
             "Score": "SCORE",
-            "Progress": "PROGRESS",
+            "Progress": "UPDATED_TIME",
             "Last Updated": "UPDATED_TIME",
             "Last Added": "ADDED_TIME",
             }

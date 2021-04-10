@@ -126,7 +126,7 @@ class AniListBrowser():
 
             page += 1
             variables['page'] = page
-  
+
         results = list(map(self._process_airing_view, list_))
         results = list(itertools.chain(*results))
         return results
@@ -147,7 +147,7 @@ class AniListBrowser():
             'page': page,
             'id': anilist_id
             }
-        
+
         recommendation = database.get(self.get_recommendations_res, 0.125, variables, page)
         return self._process_recommendation_view(recommendation, "anichart_popular/%d", page)
 
@@ -168,7 +168,7 @@ class AniListBrowser():
 
         mal_to_anilist = self.get_mal_to_anilist_res(variables)
         return self._process_mal_to_anilist(mal_to_anilist)
-        
+
     def get_airing_res(self, variables, page=1):
         query = '''
         query (
@@ -189,7 +189,7 @@ class AniListBrowser():
                                 episode
                                 airingAt
                                 media {
-                                        
+
         id
         idMal
         title {
@@ -206,6 +206,7 @@ class AniListBrowser():
                 type
                 season
         }
+        bannerImage
         coverImage {
                 extraLarge
         }
@@ -254,6 +255,7 @@ class AniListBrowser():
                         romaji,
                         english
                     }
+                    bannerImage
                     coverImage {
                         extraLarge
                     }
@@ -309,6 +311,7 @@ class AniListBrowser():
                         romaji,
                         english
                     }
+                    bannerImage
                     coverImage {
                         extraLarge
                     }
@@ -358,6 +361,7 @@ class AniListBrowser():
                         format
                         type
                         status
+                        bannerImage
                         coverImage {
                             extraLarge
                         }
@@ -397,6 +401,7 @@ class AniListBrowser():
                 romaji,
                 english
             }
+            bannerImage
             coverImage {
                 extraLarge
             }
@@ -423,7 +428,7 @@ class AniListBrowser():
             return
 
         json_res = results['data']['Media']
-        return json_res 
+        return json_res
 
     def get_mal_to_anilist_res(self, variables):
         query = '''
@@ -435,6 +440,7 @@ class AniListBrowser():
                 romaji,
                 english
             }
+            bannerImage
             coverImage {
                 extraLarge
             }
@@ -460,8 +466,8 @@ class AniListBrowser():
         if "errors" in results:
             return
 
-        json_res = results['data']['Media'] 
-        return json_res  
+        json_res = results['data']['Media']
+        return json_res
 
     @div_flavor
     def _process_anilist_view(self, json_res, base_plugin_url, page, dub=False):
@@ -576,7 +582,7 @@ class AniListBrowser():
             "name": title,
             "url": "animes/%s/%s/" % (res['id'], res.get('idMal')),
             "image": res['coverImage']['extraLarge'],
-            "fanart": kodi_meta.get('fanart', res['coverImage']['extraLarge']),
+            "fanart": kodi_meta.get('fanart', res.get('bannerImage', res['coverImage']['extraLarge'])),
             "info": info
         }
 
@@ -614,7 +620,7 @@ class AniListBrowser():
             'genres': genres,
             'id': res['media']['id']
             }
-            
+
         return base
 
     def _database_update_show(self, res):
@@ -632,7 +638,7 @@ class AniListBrowser():
         kodi_meta['episodes'] = res['episodes']
         kodi_meta['poster'] = res['coverImage']['extraLarge']
         kodi_meta['status'] = res.get('status')
-        
+
         database._update_show(
             res['id'],
             res.get('idMal'),
@@ -764,6 +770,7 @@ class AniListBrowser():
                         romaji,
                         english
                     }
+                    bannerImage
                     coverImage {
                         extraLarge
                     }
