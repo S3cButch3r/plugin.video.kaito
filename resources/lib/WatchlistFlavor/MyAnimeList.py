@@ -28,7 +28,7 @@ class MyAnimeListWLF(WatchlistFlavorBase):
             code_verifier = params['state']
         except:
             return
-        
+
         oauth_url = 'https://myanimelist.net/v1/oauth2/token'
         data = {
             'client_id': 'a8d85a4106b259b8c9470011ce2f76bc',
@@ -101,7 +101,7 @@ class MyAnimeListWLF(WatchlistFlavorBase):
             ]
 
         return statuses
-        
+
     def get_watchlist_status(self, status, next_up, offset=0, page=1):
         params = {
             "status": status,
@@ -142,6 +142,8 @@ class MyAnimeListWLF(WatchlistFlavorBase):
             all_results = list(map(self._base_next_up_view, results['data']))
         else:
             all_results = list(map(self._base_watchlist_status_view, results['data']))
+
+        all_results = [i for i in all_results if i is not None]
 
         all_results = list(itertools.chain(*all_results))
 
@@ -191,6 +193,9 @@ class MyAnimeListWLF(WatchlistFlavorBase):
         poster = image = res['node']['main_picture'].get('large', res['node']['main_picture']['medium'])
         plot = None
 
+        if episode_count > 0 and next_up > episode_count:
+            return None
+
         anilist_id, next_up_meta = self._get_next_up_meta(mal_id, int(progress))
         if next_up_meta:
             url = 'play/%d/%d/' % (anilist_id, next_up)
@@ -200,7 +205,7 @@ class MyAnimeListWLF(WatchlistFlavorBase):
 
         info = {}
 
-        info['episode'] = next_up                    
+        info['episode'] = next_up
 
         info['title'] = title
 
@@ -218,7 +223,7 @@ class MyAnimeListWLF(WatchlistFlavorBase):
             "fanart": image,
             "poster": poster,
         }
-        
+
         if next_up_meta:
             base['url'] = url
             return self._parse_view(base, False, True)
