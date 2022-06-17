@@ -235,12 +235,12 @@ class sources(BrowserBase):
         return all_results        
 
     def get_latest(self, page=1):
-        url = "https://nyaa.si/?f=0&c=1_2&q="
+        url = "https://nyaa.iss.ink/?f=0&c=1_2&q="
         data = ''
         return self._process_anime_view(url, data, "latest/%d", page)
 
     def get_latest_dub(self, page=1):
-        url = "https://nyaa.si/?f=0&c=1_2&q=english+dub"
+        url = "https://nyaa.iss.ink/?f=0&c=1_2&q=english+dub"
         data = ''
         return self._process_anime_view(url, data, "latest_dub/%d", page)
 
@@ -283,7 +283,7 @@ class sources(BrowserBase):
             season = str(season['season']).zfill(2)
             query += '|"S%sE%s "' %(season, episode.zfill(2))
 
-        url = "https://nyaa.si/?f=0&c=1_2&q=%s&s=downloads&o=desc" % query            
+        url = "https://nyaa.iss.ink/?f=0&c=1_2&q=%s&s=downloads&o=desc" % query            
 
 
         if status == 'FINISHED':
@@ -299,7 +299,7 @@ class sources(BrowserBase):
 
             query += '|"- %s"' % (episode.zfill(2))
 
-            url = "https://nyaa.si/?f=0&c=1_2&q=%s&s=seeders&&o=desc" % query
+            url = "https://nyaa.iss.ink/?f=0&c=1_2&q=%s&s=seeders&&o=desc" % query
 
         return self._process_nyaa_episodes(url, episode.zfill(2), season)
 
@@ -314,7 +314,7 @@ class sources(BrowserBase):
             _zfill = show.get('zfill', 2)
             episode = episode.zfill(_zfill)
             query = requests.utils.quote(query)
-            url = "https://nyaa.si/?f=0&c=1_2&q=%s&s=downloads&o=desc" % query
+            url = "https://nyaa.iss.ink/?f=0&c=1_2&q=%s&s=downloads&o=desc" % query
             return self._process_nyaa_backup(url, anilist_id, _zfill, episode)
 
         try:
@@ -330,7 +330,7 @@ class sources(BrowserBase):
             season = str(season['season']).zfill(2)
             query += '|"S%sE%s"' %(season, episode.zfill(2))
 
-        url = "https://nyaa.si/?f=0&c=1_2&q=%s" % query
+        url = "https://nyaa.iss.ink/?f=0&c=1_2&q=%s" % query
         return self._process_nyaa_episodes(url, episode)
 
     def _get_episode_sources_pack(self, show, anilist_id, episode):
@@ -345,12 +345,12 @@ class sources(BrowserBase):
             season = season['season']
             query += '|"S{0}"|"Season {0}"'.format(season)
 
-        url = "https://nyaa.si/?f=0&c=1_2&q=%s&s=seeders&&o=desc" % query
+        url = "https://nyaa.iss.ink/?f=0&c=1_2&q=%s&s=seeders&&o=desc" % query
         return self._process_nyaa_backup(url, anilist_id, 2, episode.zfill(2), True)
 
     def _get_movie_sources(self, query, anilist_id, episode):
         query = requests.utils.quote(query)
-        url = "https://nyaa.si/?f=0&c=1_2&q=%s&s=downloads&o=desc" % query
+        url = "https://nyaa.iss.ink/?f=0&c=1_2&q=%s&s=downloads&o=desc" % query
         sources = self._process_nyaa_movie(url, '1')
 
         if not sources:
@@ -367,11 +367,11 @@ class sources(BrowserBase):
         if 'general_title' in show:
             query = show['general_title']
             query = requests.utils.quote(query)
-            url = "https://nyaa.si/?f=0&c=1_2&q=%s&s=downloads&o=desc" % query
+            url = "https://nyaa.iss.ink/?f=0&c=1_2&q=%s&s=downloads&o=desc" % query
             return self._process_nyaa_backup(url, episode)
         
         query = requests.utils.quote(show)
-        url = "https://nyaa.si/?f=0&c=1_2&q=%s" % query
+        url = "https://nyaa.iss.ink/?f=0&c=1_2&q=%s" % query
         return self._process_nyaa_movie(url, episode)
 
 class TorrentCacheCheck:
